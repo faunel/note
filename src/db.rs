@@ -20,7 +20,7 @@ pub fn show_notes(conn: &Connection) -> Result<()> {
         if list.done == 0 {
             println!("{} {}", list.id, list.message);
         } else {
-            println!("{} {}", list.id, "✅".to_owned() + &list.message);
+            println!("{} {}", list.id, "✅ ".to_owned() + &list.message);
         }
     }
     Ok(())
