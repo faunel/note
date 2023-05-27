@@ -1,4 +1,5 @@
 use rusqlite::{Connection, Result, named_params};
+use owo_colors::OwoColorize;
 
 #[derive(Debug)]
 struct List {
@@ -18,9 +19,9 @@ pub fn show_notes(conn: &Connection) -> Result<()> {
             done: row.get(2)?,
         };
         if list.done == 0 {
-            println!("{} {}", list.id, list.message);
+            println!("{} {}", list.id.yellow(), list.message);
         } else {
-            println!("{} {}", list.id, "✅ ".to_owned() + &list.message);
+            println!("{} {} {}", list.id.bold().green(), "✅ ".bold().green(), &list.message);
         }
     }
     Ok(())
@@ -30,7 +31,7 @@ pub fn show_notes(conn: &Connection) -> Result<()> {
 pub fn append_note(conn: &Connection, note: &String) -> Result<()> {
     let mut stmt = conn.prepare("INSERT INTO notes (message, done) VALUES (:message, :done)")?;
     stmt.execute(named_params! {":message": &note.to_string(), ":done": 0})?;
-    println!("Нотатка додана");
+    println!("{}", "Нотатка додана".green());
     Ok(())
 }
 
@@ -39,9 +40,9 @@ pub fn mark_done(conn: &Connection, index: &u16) -> Result<()> {
     let mut stmt = conn.prepare("UPDATE notes SET done = :done WHERE id = :id")?;
     let affected_rows = stmt.execute(named_params! {":done": 1, ":id": &index})?;
     if affected_rows > 0 {
-        println!("Нотатка {} відмічена", &index);
+        println!("{} {}", &index.green(), "нотатка відмічена".green());
     } else {
-        println!("Нотатки з індексом {} немає", &index);
+        println!("{} {}", "Немає нотатки з індексом".red(), &index.red());
     }
     Ok(())
 }
@@ -52,7 +53,7 @@ fn clear_done(conn: &Connection) -> Result<()> {
         "DELETE FROM notes WHERE done = 1",
         [],
     )?;
-    println!("Відмічені нотатки видалені");
+    println!("{}", "Відмічені нотатки видалені".green());
     Ok(())
 }
 
@@ -62,7 +63,7 @@ fn clear_all(conn: &Connection) -> Result<()> {
         "DELETE FROM notes",
         [],
     )?;
-    println!("Всі нотатки видалені");
+    println!("{}", "Всі нотатки видалені".green());
     Ok(())
 }
 
@@ -71,9 +72,9 @@ pub fn command_remove(conn: &Connection, index: &u16) -> Result<()> {
     let mut stmt = conn.prepare("DELETE FROM notes WHERE id = :id")?;
     let affected_rows = stmt.execute(named_params! {":id": &index})?;
     if affected_rows > 0 {
-        println!("Нотатка {} видалена ", &index);
+        println!("{} {}", &index.green(), "нотатка видалена".green());
     } else {
-        println!("Нотатки з індексом {} немає ", &index);
+        println!("{} {}", "Немає нотатки з індексом".red(), &index.red());
     }
     Ok(())
 }
