@@ -17,7 +17,7 @@
 Виконайте наступні команди для компіляції
 
 ~~~bash  
-  git clone https://link-to-project
+  git clone https://github.com/faunel/note.git
   cd note
   cargo build --release
 ~~~
